@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Cloog by Distrotech</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Cloog</h1>
+          <h2>Mirror Of git://repo.or.cz/cloog.git</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/Distrotech/cloog/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/Distrotech/cloog/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/Distrotech/cloog" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h1>
+<a name="-------------------------------------------------------------------" class="anchor" href="#-------------------------------------------------------------------"><span class="octicon octicon-link"></span></a>/**-------------------------------------------------------------------**</h1>
+
+<h1>
+<a name="------------------------------cloog--------------------------------" class="anchor" href="#------------------------------cloog--------------------------------"><span class="octicon octicon-link"></span></a>**                              CLooG                                **</h1>
+
+<h1>
+<a name="--------------------------------------------------------------------1" class="anchor" href="#--------------------------------------------------------------------1"><span class="octicon octicon-link"></span></a><strong>-------------------------------------------------------------------</strong>
+</h1>
+
+<h1>
+<a name="---------------------the-chunky-loop-generator---------------------" class="anchor" href="#---------------------the-chunky-loop-generator---------------------"><span class="octicon octicon-link"></span></a>**                     The Chunky Loop Generator                     **</h1>
+
+<h1>
+<a name="--------------------------------------------------------------------2" class="anchor" href="#--------------------------------------------------------------------2"><span class="octicon octicon-link"></span></a><strong>-------------------------------------------------------------------</strong>
+</h1>
+
+<h1>
+<a name="-----------first-version-of-this-file-january-22th-2002-----------" class="anchor" href="#-----------first-version-of-this-file-january-22th-2002-----------"><span class="octicon octicon-link"></span></a>**           First version of this file: january 22th 2002           **</h1>
+
+<h1>
+<a name="--------------------------------------------------------------------3" class="anchor" href="#--------------------------------------------------------------------3"><span class="octicon octicon-link"></span></a><strong>-------------------------------------------------------------------</strong>/</h1>
+
+<p>For complete informations about this software, how to build and use it,
+please see the postscript file in the ./doc subdirectory (a pdf version
+is available in the web site).</p>
+
+<p>Overview :
+I.   Description 
+II.  Building CLooG
+III. Options
+IV.  Running CLooG
+V.   General Questions</p>
+
+<h1>
+<a name="--------------------------------------------------------------------4" class="anchor" href="#--------------------------------------------------------------------4"><span class="octicon octicon-link"></span></a><strong>-------------------------------------------------------------------</strong>
+</h1>
+
+<h1>
+<a name="------------------------i-description-----------------------------" class="anchor" href="#------------------------i-description-----------------------------"><span class="octicon octicon-link"></span></a>**                        I. Description                             **</h1>
+
+<h1>
+<a name="--------------------------------------------------------------------5" class="anchor" href="#--------------------------------------------------------------------5"><span class="octicon octicon-link"></span></a><strong>-------------------------------------------------------------------</strong>/</h1>
+
+<p>CLooG is a software which generates loops for scanning Z-polyhedra. That is,
+CLooG finds the code or pseudo-code where each integral point of one or more
+parametrized polyhedron or parametrized polyhedra union is reached. CLooG is
+designed to avoid control overhead and to produce a very efficient code.</p>
+
+<p>Its input is some data on the polyhedra to scan, basically the system of
+affine inequalities that define them, and a context that defines some
+properties known on the parameters if any. The output is the pseudo scanning
+code. Many facilities are provided to generate a near-to-be-compileable code,
+and every useful functions to generate the code may be called from the CLooG
+library.</p>
+
+<pre><code>        INPUT                   |                 OUTPUT
+</code></pre>
+
+<p>(fortunately not exactly the input, |   (the real one, with default options)
+ check test/readme.cloog for the    |
+ real input for that problem !)     |
+                                |
+    j^ i&gt;=2                     |
+         | | j&lt;=n+2-i               |
+         | |\     | i&lt;=n            |
+         | | \    |                 |
+       m-+-****---+-j&lt;=m            |    for (i=2;i&lt;=n;i++) {
+         | *****  |                 |      for (j=2;j&lt;=min(m,-i+n+2);j++) {<br>
+         | ****** |                ==&gt;       S1 ;
+         | *******|                 |      }
+       2-+-********-j&gt;=2            |    }
+         | |      |\                |
+       0-+-+------+---&gt;i            |
+         | |      |                 |
+         0 2      n                 |
+                                    |
+       Context : n&gt;=2               |
+                 m&gt;=2               |
+       System  : 2&lt;=i&lt;=n            |
+                 2&lt;=j&lt;=m            |
+         j&lt;=n+2-i           |</p>
+
+<h1>
+<a name="--------------------------------------------------------------------6" class="anchor" href="#--------------------------------------------------------------------6"><span class="octicon octicon-link"></span></a><strong>-------------------------------------------------------------------</strong>
+</h1>
+
+<h1>
+<a name="----------------------ii-building-cloog---------------------------" class="anchor" href="#----------------------ii-building-cloog---------------------------"><span class="octicon octicon-link"></span></a>**                      II. Building CLooG                           **</h1>
+
+<h1>
+<a name="--------------------------------------------------------------------7" class="anchor" href="#--------------------------------------------------------------------7"><span class="octicon octicon-link"></span></a><strong>-------------------------------------------------------------------</strong>/</h1>
+
+<p>If you obtained CLooG from the git repository, then you first
+need to obtain the submodules and create a configure script.</p>
+
+<p>./get_submodules.sh
+  ./autogen.sh</p>
+
+<p>The first step is only needed if you plan on using the isl backend.</p>
+
+<p>The configure shell script attempts to guess correct values for various
+system-dependent variables used during compilation. It uses those values to
+create a Makefile. The file configure.ac is used to create configure by a
+program called autoconf.  You only need configure.ac if you want to change
+it or regenerate configure using a newer version of autoconf.</p>
+
+<p>The simplest way to compile this package is:
+cd to the directory containing the package's source code and type </p>
+
+<p>./configure</p>
+
+<p>to configure the package for your system (while running, configure prints
+some messages telling which features it is checking for). To compile the
+package, type</p>
+
+<p>make</p>
+
+<p>to install the program and/or the library, type</p>
+
+<p>make install</p>
+
+<p>you can remove the program binaries and object files from the source code
+directory by typing</p>
+
+<p>make clean</p>
+
+<p>To also remove the files that configure created (so you can compile the
+package for a different kind of computer) type</p>
+
+<p>make distclean</p>
+
+<h1>
+<a name="--------------------------------------------------------------------8" class="anchor" href="#--------------------------------------------------------------------8"><span class="octicon octicon-link"></span></a><strong>-------------------------------------------------------------------</strong>
+</h1>
+
+<h1>
+<a name="---------------------------iii-options----------------------------" class="anchor" href="#---------------------------iii-options----------------------------"><span class="octicon octicon-link"></span></a>**                           III. Options                            **</h1>
+
+<h1>
+<a name="--------------------------------------------------------------------9" class="anchor" href="#--------------------------------------------------------------------9"><span class="octicon octicon-link"></span></a><strong>-------------------------------------------------------------------</strong>/</h1>
+
+<p>By default,  make will install the package's files in /usr/local/bin,
+/usr/local/lib, etc. You can specify an installation prefix other than 
+/usr/local by giving onfigure the option --prefix=PATH.</p>
+
+<p>By default, configure will use the isl that comes bundled with CLooG.
+Using the --with-isl option of configure the user can specify that "no" isl,
+a previously installed ("system") isl or a "build" isl should be used.
+In the latter case, the user should also specify the build location
+using --with-isl-builddir=PATH.  In case of an installed isl,
+the installation location can be specified using the
+--with-isl-prefix=PATH and --with-isl-exec-prefix=PATH options of configure.</p>
+
+<p>By default, configure will seek the PolyLib in standard locations.
+If necessary, you can specify the PolyLib's path by giving configure the
+option --with-polylib-prefix=PATH and/or --with-polylib-exec-prefix=PATH.</p>
+
+<p>By default, configure will seek the GMP library in standard locations.
+If necessary, you can specify the GMP's path by giving configure the
+option --with-gmp-prefix=PATH and/or --with-gmp-exec-prefix=PATH.</p>
+
+<p>By default, when using the PolyLib backend,
+CLooG and its library are built using 64 bits integer
+representation. You can choose to specify explicitly others integer
+representations by using:
+--with-bits=32  for 32 bits integers,
+--with-bits=64  for 64 bits integers (default),
+--with-bits=gmp for multiple precision integers.</p>
+
+<h1>
+<a name="--------------------------------------------------------------------10" class="anchor" href="#--------------------------------------------------------------------10"><span class="octicon octicon-link"></span></a><strong>-------------------------------------------------------------------</strong>
+</h1>
+
+<h1>
+<a name="-------------------------iv-running-cloog-------------------------" class="anchor" href="#-------------------------iv-running-cloog-------------------------"><span class="octicon octicon-link"></span></a>**                         IV. Running CLooG                         **</h1>
+
+<h1>
+<a name="--------------------------------------------------------------------11" class="anchor" href="#--------------------------------------------------------------------11"><span class="octicon octicon-link"></span></a><strong>-------------------------------------------------------------------</strong>/</h1>
+
+<p>To run CLooG, simply type 'cloog', optionally followed by the name of an
+input file. You can type 'cloog -h' or 'cloog --help' for some help.
+For more informations, please check the ./doc subdirectory.</p>
+
+<h1>
+<a name="--------------------------------------------------------------------12" class="anchor" href="#--------------------------------------------------------------------12"><span class="octicon octicon-link"></span></a><strong>-------------------------------------------------------------------</strong>
+</h1>
+
+<h1>
+<a name="------------------------v-general-questions-----------------------" class="anchor" href="#------------------------v-general-questions-----------------------"><span class="octicon octicon-link"></span></a>**                        V. General Questions                       **</h1>
+
+<h1>
+<a name="--------------------------------------------------------------------13" class="anchor" href="#--------------------------------------------------------------------13"><span class="octicon octicon-link"></span></a><strong>-------------------------------------------------------------------</strong>/</h1>
+
+<ol>
+<li>What does CLooG means ?</li>
+</ol><p>CLooG is the Chunky LOOp Generator, Chunky is an automatic loop optimizer for
+data locality. CLooG is a completely independent part of the Chunky project.
+Pronounce 'CLooG' as 'klug', which means 'sly' in german :-).</p>
+
+<ol>
+<li>CLooG do not compile, what should I do ?</li>
+</ol><p>CLooG should compile everywhere (assuming that PolyLib is still there), thus
+there is a problem or the documentation is not clear, in both case it is
+necessary to ask the author(s) !</p>
+
+<ol>
+<li>I need a feature that CLooG do not implement, what should I do ?</li>
+</ol><p>There are two ways. First, CLooG is a LGPL software and library. So you
+are welcome to improve it yourself ;-) ! Many project have been successful, it
+is -maybe- a sign that this is not too hard to put your hands inside the
+source. Second, just ask the author(s) :-) ! Maybe a lot of people would be
+interessed by such feature, maybe many people asked for it before, maybe it's
+trivial to implement (and even)... Please just never hesitate to ask the
+author(s) !</p>
+
+<ol>
+<li>I implemented a cool feature, can I submit it ?</li>
+</ol><p>Obviously you are welcome to send the author(s) any improvement. But obviously
+we are quite careful with readability, correctness and stability, and the
+author(s) will read, check and check again any contribution before including it.
+Thus, it can take time... There are few basic rules to write contributions:</p>
+
+<ul>
+<li>(1) Do never change the indentation of any part of the code that is not yours.</li>
+<li>(2) Do never send codes that use more than 80 columns.</li>
+<li>(3) Do never send codes without a lot of comments in (bad or good) english.</li>
+<li>(4) Do never send codes with obscure and/or non-english variable names.</li>
+<li>(5) Use C89, just C, only C (note: "//" comments are not C89,
+variable declaration elsewhere than at the beginning of a block, is not C89).</li>
+<li>(6) Read doc/SubmittingPatches
+Please understand that in order to live for a long time, and to be used in many
+projects the very first priority for CLooG is to be readable and documented.</li>
+</ul><ol>
+<li>Is CLooG bug free ?</li>
+</ol><p>No, who can ? ClooG is a complex program, and we do not pretend it to be bug
+free. Nevertheless because it has been tested and tested, we are fairly sure
+that CLooG results with default options have good chances to be satisfactory.
+If you find a result that looks strange, inadequate or incorrect, please send:</p>
+
+<ul>
+<li>(1) The input file to the author(s).</li>
+<li>(2) The output.</li>
+<li>(3) The first line given by typing 'cloog -v'.</li>
+<li>(4) All your command line options to achieve the result.
+We will try to explain the result or to fix the problem as soon as possible.</li>
+</ul><ol>
+<li>How can I contact the author(s) ?</li>
+</ol><p>Just send a mail to <a href="mailto:cloog-development@googlegroups.com">cloog-development@googlegroups.com</a></p>
+        </section>
+
+        <footer>
+          Cloog is maintained by <a href="https://github.com/Distrotech">Distrotech</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
+    </div>
+  </body>
+</html>
