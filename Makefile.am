@@ -153,8 +153,8 @@ uninstall-local:
 
 dist-hook:
 	rm -f $(distdir)/test/Makefile
-	$(top_builddir)/genversion.sh > $(distdir)/CLOOG_HEAD
-	(cd doc; make cloog.pdf) && cp doc/cloog.pdf $(distdir)/doc/
+#	$(top_builddir)/genversion.sh > $(distdir)/CLOOG_HEAD
+#	(cd doc; make cloog.pdf) && cp doc/cloog.pdf $(distdir)/doc/
 
 #/*****************************************************************************
 # *                                   Rules                                   *
